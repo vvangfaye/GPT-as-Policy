@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 # Source this file in the RoboDojo process; it does not modify system libraries.
 export TASK_ROOT="${TASK_ROOT:-$HOME/Projects/gpt-gated-dagger}"
+if [[ "${ROLLOUT_GRAPHICS_MODE:-bundled}" == system ]]; then
+  # A workstation uses its installed NVIDIA/Vulkan stack, without container shims.
+  nvidia-smi --query-gpu=driver_version --format=csv,noheader >/dev/null || return 1
+  export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-$TASK_ROOT/runtime/xdg}"
+  mkdir -p "$XDG_RUNTIME_DIR"
+  chmod 700 "$XDG_RUNTIME_DIR"
+  export OMNI_KIT_ACCEPT_EULA=Y
+  return 0
+fi
+[[ "${ROLLOUT_GRAPHICS_MODE:-bundled}" == bundled ]] || { echo 'Unknown graphics mode' >&2; return 1; }
 DAGGER_DRIVER_VERSION="$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n 1)"
 export DAGGER_NVIDIA_RUNTIME="${DAGGER_NVIDIA_RUNTIME:-$HOME/.local/share/robolab-runtime/NVIDIA-Linux-x86_64-$DAGGER_DRIVER_VERSION}"
 export DAGGER_SYSROOT="${DAGGER_SYSROOT:-$HOME/.local/share/robolab-runtime/sysroot}"

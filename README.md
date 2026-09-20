@@ -47,6 +47,13 @@ The build verifies the preserved shared runtime and produces a self-contained `d
 
 ## Run a new evaluation
 
+For a local workstation using the installed Codex CLI, see the
+[Chinese local reproduction guide](hybrid_rollout/robodojo/LOCAL_REPRODUCTION.md).
+`python3 -m hybrid_rollout.robodojo.local_experiment plan` selects the exact
+50 published paired cases; `doctor`, `login`, `run` and `summarize` provide
+local preflight, isolated authentication, serial execution and result collection.
+Planning and `published` reference verification require no simulator or model calls.
+
 The integrations depend on externally installed simulator and policy environments. They are **not** a standalone simulator distribution. RoboDojo uses Isaac Sim 5.1, the matching RoboDojo source/assets and its π₀.₅ OpenPI/JAX checkpoint. RoboLab has its own environment. Obtain these from their upstream projects under their own terms. See `hybrid_rollout/robodojo/SOURCE.json` for the recorded upstream revisions and checkpoint identity.
 
 1. Prepare your simulator environment, OpenPI/JAX environment, checkpoint and Codex CLI. Keep these separate from the lightweight tools environment.

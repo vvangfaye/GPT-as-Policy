@@ -13,6 +13,7 @@ from .settings import AUTH_PROFILE, AUTH_MODE, BASE_URL, EFFORT, MODEL, PROVIDER
 
 
 PUBLIC_ENVIRONMENT = (
+    'ROLLOUT_GRAPHICS_MODE',
     'ROLLOUT_EVALUATION_METHOD', 'ROLLOUT_PHASE1_CERTIFICATE',
     'ROLLOUT_AUTH_PROFILE', 'ROLLOUT_CODEX_STATE_DIR', 'ROLLOUT_GATEWAY_NO_PROXY',
     'CODE_ROOT', 'RUNTIME_ROOT', 'RESULTS_ROOT', 'ROBODOJO_SOURCE',
@@ -80,6 +81,11 @@ def make_manifest(archive: Path, config_path: Path) -> dict:
     if method == 'gpt_only':
         derived['policy'] = dict(enabled=False, checkpoint_loaded=False, inference_calls=0)
         derived['controller']['PYTHONPATH'] = snapshot
+    if values.get('ROLLOUT_GRAPHICS_MODE') == 'system':
+        simulator = derived['simulator']
+        for key in ('DAGGER_NVIDIA_RUNTIME', 'DAGGER_SYSROOT', 'LD_LIBRARY_PATH',
+                    'VK_ICD_FILENAMES', '__EGL_VENDOR_LIBRARY_FILENAMES'):
+            simulator[key] = 'inherited system graphics stack; no bundled override'
     return {
         'schema': 'hybrid_rollout.robodojo.launch.v1',
         'evaluation_method': method,
